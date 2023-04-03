@@ -3,13 +3,17 @@
 # dependencies
 /01/node_modules
 /01/.pnp
+/02/node_modules
+/02/.pnp
 .pnp.js
 
 # testing
 /01/coverage
+/02/coverage
 
 # production
 /01/build
+/02/build
 
 # misc
 .DS_Store
@@ -21,3 +25,6 @@
 /01/npm-debug.log*
 /01/yarn-debug.log*
 /01/yarn-error.log*
+/02/npm-debug.log*
+/02/yarn-debug.log*
+/02/yarn-error.log*
