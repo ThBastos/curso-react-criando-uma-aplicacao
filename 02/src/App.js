@@ -1,12 +1,11 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect } from 'react'
 
 function App() {
   
-  const Ref = useRef(null);
-  const [tempo, setTempo] = useState('25:00');
-  const [cronometroAtivo, setCronometroAtivo] = useState(false);
-  const [tempoFinal, setTempoFinal] = useState();
-  const [minutos, setMinutos] = useState('25');
+  const [timer, setTimer] = useState('25:00');
+  const [timerActive, setTimerActive] = useState(false);
+  const [timerEnd, setTimerEnd] = useState();
+  const [textMinutes, setTextMinutes] = useState('25');
 
   const getTimeRemaining = (e) => {
     const total = Date.parse(e) - Date.parse(new Date());
@@ -17,53 +16,46 @@ function App() {
     };
   }
   
-  const executarCronometro = () => {
-    if(!cronometroAtivo) {
-      limparTempo(getDeadTime())
-      setCronometroAtivo(true)
-    } else {
-      setCronometroAtivo(false)
-      const diferenca = Date.parse(tempoFinal) - Date.parse(new Date())
-      const seconds = Math.floor((diferenca / 1000) % 60)
-      const minutes = Math.floor((diferenca / 1000 / 60) % 60)
-      setTempo((minutes > 9 ? minutes : '0' + minutes) + ':' + (seconds > 9 ? seconds : '0' + seconds))
-      if (Ref.current) clearInterval(Ref.current)
-    }
+  const initTimer = (e) => {
+    clearTimer(getDeadTime());
+    console.log("timerEnd: ", timerEnd);
+    const diferenca = Date.parse(timerEnd) - Date.parse(new Date())
+    const seconds = Math.floor((diferenca / 1000) % 60)
+    const minutes = Math.floor((diferenca / 1000 / 60) % 60)
+    setTimer((minutes > 9 ? minutes : '0' + minutes) + ':' + (seconds > 9 ? seconds : '0' + seconds))
   }
 
   const getDeadTime = () => {
     let deadline = new Date()
-    deadline.setMinutes(deadline.getMinutes() + parseInt(minutos))
+    deadline.setMinutes(deadline.getMinutes() + parseInt(textMinutes))
     deadline.setSeconds(deadline.getSeconds() + 0)
     return deadline
   }
 
-  const iniciarCronometro = (e) => {
+  const startTimer = (e) => {
     let { total, minutes, seconds } = getTimeRemaining(e);
     if (total >= 0) {
-      setTempo((minutes > 9 ? minutes : '0' + minutes) + ':' + (seconds > 9 ? seconds : '0' + seconds))
+      setTimer((minutes > 9 ? minutes : '0' + minutes) + ':' + (seconds > 9 ? seconds : '0' + seconds))
     }
   }
 
-  const limparTempo = (e) => {
+  const clearTimer = (e) => {
     const id = setInterval(() => {
-      iniciarCronometro(e)
-      setTempoFinal(e)
+      startTimer(e)
+      setTimerEnd(e)
       if(Date.parse(new Date()) === Date.parse(e)){
-        setTempo((minutos > 9 ? minutos : '0' + minutos) + ':00')
+        setTimer((textMinutes > 9 ? textMinutes : '0' + textMinutes) + ':00')
       }
     }, 1000)
-    Ref.current = id
   }
   
   useEffect(() => {
-    setTempo((minutos > 9 ? minutos : '0' + minutos) + ':00')
-  }, [minutos]);
+    setTimer((textMinutes > 9 ? textMinutes : '0' + textMinutes) + ':00')
+  }, [textMinutes]);
 
-  const resetTempo = () => {
-    setCronometroAtivo(false)
-    setTempo((minutos > 9 ? minutos : '0' + minutos) + ':00')
-    if (Ref.current) clearInterval(Ref.current)
+  const resetTimer = () => {
+    setTimerActive(false)
+    setTimer((textMinutes > 9 ? textMinutes : '0' + textMinutes) + ':00')
   }
   
   return (
@@ -75,10 +67,10 @@ function App() {
             	<input type="number" maxLength="60" value="25" />
             	<p>minutos</p>
           	</div>
-          	<div className='timerPomo'>{tempo}</div>
+          	<div className='timerPomo'>{timer}</div>
           	<div className='flexButtons'>
-            	<button className={cronometroAtivo ? "buttonActive" : ""} onClick={iniciarCronometro}>{cronometroAtivo ? "Parar" : "Iniciar"}</button>
-            	<button onClick={resetTempo}>Resetar</button>
+            	<button className={timerActive ? "buttonActive" : ""} onClick={initTimer}>{timerActive ? "Parar" : "Iniciar"}</button>
+            	<button onClick={resetTimer}>Resetar</button>
           	</div>
         </div>
     </div>
